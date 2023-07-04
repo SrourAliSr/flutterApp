@@ -53,18 +53,34 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
+
               try {
-                final userCredential =
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
                   email: email,
                   password: password,
                 );
-                std.log(userCredential.toString());
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'user-not-found') {
                   std.log('User Not Found!');
                 } else if (e.code == 'wrong-password') {
                   std.log('Wrong Password!');
+                } else {
+                  std.log(e.code.toString());
+                }
+              }
+              final user = FirebaseAuth.instance.currentUser;
+              if (user != null) {
+                std.log(user.email.toString());
+                if (user.emailVerified) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/Notes/',
+                    (route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/Verify/',
+                    (route) => false,
+                  );
                 }
               }
             },
@@ -73,7 +89,7 @@ class _LoginViewState extends State<LoginView> {
           TextButton(
               onPressed: () {
                 Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/rigester/',
+                  '/Rigester/',
                   (route) => false,
                 );
               },

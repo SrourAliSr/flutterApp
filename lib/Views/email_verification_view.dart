@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/constanst/routes.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -30,7 +31,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                       if (user.emailVerified) {
                         // ignore: use_build_context_synchronously
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/Notes/',
+                          notesRoute,
                           (route) => false,
                         );
                       }
@@ -40,7 +41,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               TextButton(
                   onPressed: () {
                     Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/Login/',
+                      loginRoute,
                       (route) => false,
                     );
                   },

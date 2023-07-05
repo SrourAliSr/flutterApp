@@ -5,8 +5,8 @@ import 'package:flutterapp/Views/email_verification_view.dart';
 import 'package:flutterapp/Views/login_view.dart';
 import 'package:flutterapp/Views/register_view.dart';
 import 'package:flutterapp/constanst/routes.dart';
+import 'package:flutterapp/utilities/show_error_dialog.dart';
 import 'firebase_options.dart';
-import 'dart:developer' as std show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,7 +89,10 @@ class _NotesViewState extends State<NotesView> {
                   }
                   break;
                 default:
-                  std.log('error occured');
+                  await showErrorDialog(
+                    context,
+                    'Error occured!',
+                  );
                   break;
               }
             },

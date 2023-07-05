@@ -50,7 +50,16 @@ class HomePage extends StatelessWidget {
               return const LoginView();
             }
           default:
-            return const CircularProgressIndicator();
+            return const Scaffold(
+              body: SizedBox(
+                width: double.infinity,
+                height: double.infinity,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            );
         }
       },
     );
@@ -108,9 +117,7 @@ class _NotesViewState extends State<NotesView> {
         ],
       ),
       body: Container(
-        height: 500,
-        width: 350,
-        padding: const EdgeInsets.fromLTRB(230, 450, 0, 0),
+        padding: const EdgeInsets.fromLTRB(150, 300, 0, 0),
         child: const Text(
           'Hello notes',
         ),

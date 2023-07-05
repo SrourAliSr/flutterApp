@@ -17,12 +17,13 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
         title: const Text('Email verification'),
         backgroundColor: Colors.amber,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(100.0),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(0, 200, 0, 10),
+        child: Center(
           child: Column(
             children: [
-              const Text('please verify your email adress'),
+              const Text(
+                  'we\'ve sent an email verification please verify your email adress'),
               TextButton(
                   onPressed: () async {
                     final user = FirebaseAuth.instance.currentUser;
@@ -37,15 +38,18 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                       }
                     }
                   },
-                  child: const Text('send email verification')),
+                  child: const Text('Haven\'t recived the email? click here!')),
               TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      loginRoute,
-                      (route) => false,
-                    );
-                  },
-                  child: const Text('Return to login'))
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    rigesterRoute,
+                    (route) => false,
+                  );
+                },
+                child: const Text('Restart'),
+              )
             ],
           ),
         ),

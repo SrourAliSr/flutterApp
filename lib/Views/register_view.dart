@@ -1,6 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/constanst/routes.dart';
+import 'package:flutterapp/services/auth/auth_%20exception.dart';
+import 'package:flutterapp/services/auth/auth_services.dart';
 import 'package:flutterapp/utilities/show_error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -53,67 +54,32 @@ class _RegisterViewState extends State<RegisterView> {
           TextButton(
             onPressed: () async {
               try {
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                await AuthServices.firebase().createUser(
                   email: _email.text,
                   password: _password.text,
                 );
-                final user = FirebaseAuth.instance.currentUser;
-                user?.sendEmailVerification();
+                AuthServices.firebase().sendEmailVerification();
                 // ignore: use_build_context_synchronously
                 Navigator.of(context).pushNamed(verifyRoute);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'week-password') {
-                  await showErrorDialog(
-                    context,
-                    e.code,
-                  );
-                } else if (e.code == 'email-already-in-use') {
-                  try {
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: _email.text,
-                      password: _password.text,
-                    );
-                  } on FirebaseAuthException catch (a) {
-                    if (a.code == 'wrong-password') {
-                      await showErrorDialog(
-                        context,
-                        a.code,
-                      );
-                    } else {}
-                  }
-                  final user = FirebaseAuth.instance.currentUser;
-
-                  if (user != null) {
-                    if (user.emailVerified) {
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        notesRoute,
-                        (route) => false,
-                      );
-                    } else {
-                      final users = FirebaseAuth.instance.currentUser;
-                      users?.sendEmailVerification();
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).popAndPushNamed(
-                        verifyRoute,
-                      );
-                    }
-                  }
-                } else if (e.code == 'invalid-email') {
-                  await showErrorDialog(
-                    context,
-                    e.code,
-                  );
-                } else {
-                  await showErrorDialog(
-                    context,
-                    e.code,
-                  );
-                }
-              } catch (e) {
+              } on WeakPasswordAuthException {
                 await showErrorDialog(
                   context,
-                  e.toString(),
+                  'The password is weak!.',
+                );
+              } on EmailAlreadyInUseAuthException {
+                await showErrorDialog(
+                  context,
+                  'Email is already in use!.',
+                );
+              } on InvalidEmailAuthException {
+                await showErrorDialog(
+                  context,
+                  'Invalid email!.',
+                );
+              } on GenericAuthException {
+                await showErrorDialog(
+                  context,
+                  'Failed to register!.',
                 );
               }
             },

@@ -116,10 +116,13 @@ class _NotesViewState extends State<NotesView> {
           )
         ],
       ),
-      body: Container(
-        padding: const EdgeInsets.fromLTRB(150, 300, 0, 0),
-        child: const Text(
-          'Hello notes',
+      body: const SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: Align(
+          child: Text(
+            'Hello notes',
+          ),
         ),
       ),
     );

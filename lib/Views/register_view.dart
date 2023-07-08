@@ -94,9 +94,8 @@ class _RegisterViewState extends State<RegisterView> {
                       final users = FirebaseAuth.instance.currentUser;
                       users?.sendEmailVerification();
                       // ignore: use_build_context_synchronously
-                      Navigator.of(context).restorablePushNamedAndRemoveUntil(
+                      Navigator.of(context).popAndPushNamed(
                         verifyRoute,
-                        (route) => false,
                       );
                     }
                   }

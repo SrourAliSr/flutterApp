@@ -22,10 +22,10 @@ class _NotesViewState extends State<NotesView> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    _notesService.close();
-    super.dispose();
+  void deltedatabase() {
+    _notesService.deleteAllNotes();
+    _notesService.clearTable('note');
+    _notesService.clearTable('user');
   }
 
   @override
@@ -35,6 +35,10 @@ class _NotesViewState extends State<NotesView> {
         title: const Text('Your notes'),
         backgroundColor: Colors.amber,
         actions: [
+          IconButton(
+            onPressed: () => deltedatabase(),
+            icon: const Icon(Icons.remove),
+          ),
           IconButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(newNewRout);
@@ -82,9 +86,28 @@ class _NotesViewState extends State<NotesView> {
                 stream: _notesService.allNotes,
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
                     case ConnectionState.active:
-                      return const Text('Waiting for the notes!');
+                      if (snapshot.hasData) {
+                        final allNotes = snapshot.data as List<DataBaseNote>;
+                        return ListView.builder(
+                          itemCount: allNotes.length,
+                          itemBuilder: (context, index) {
+                            final notess = allNotes[index];
+                            return ListTile(
+                              title: Text(
+                                notess.text,
+                                maxLines: 1,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              hoverColor: Colors.amber,
+                            );
+                          },
+                        );
+                      } else {
+                        return const CircularProgressIndicator();
+                      }
+
                     default:
                       return const CircularProgressIndicator();
                   }

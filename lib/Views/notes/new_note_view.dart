@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp/services/auth/auth_services.dart';
 import 'package:flutterapp/services/crud/notes_service.dart';
-import 'package:sqflite/sqflite.dart';
 
 class NewNoteView extends StatefulWidget {
   const NewNoteView({super.key});
@@ -17,7 +16,6 @@ class _NewNoteViewState extends State<NewNoteView> {
 
   @override
   void initState() {
-    _note;
     _notesService = NotesService();
     _textController = TextEditingController();
     super.initState();
@@ -27,22 +25,17 @@ class _NewNoteViewState extends State<NewNoteView> {
     final note = _note;
     if (note == null) {
       return;
-    } else {
-      final text = _textController.text;
-      _notesService.updateNote(
-        note: note,
-        text: text,
-      );
     }
+    final text = _textController.text;
+    await _notesService.updateNote(
+      note: note,
+      text: text,
+    );
   }
 
   void _setupTextControllerListener() {
-    _textController.removeListener(() {
-      _textControllerListener();
-    });
-    _textController.addListener(() {
-      _textControllerListener();
-    });
+    _textController.removeListener(_textControllerListener);
+    _textController.addListener(_textControllerListener);
   }
 
   Future<DataBaseNote> createNewNote() async {
@@ -90,9 +83,8 @@ class _NewNoteViewState extends State<NewNoteView> {
           builder: (context, snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.done:
-                _note = snapshot.data;
+                _note = snapshot.data as DataBaseNote;
                 _setupTextControllerListener();
-
                 return TextField(
                   controller: _textController,
                   keyboardType: TextInputType.multiline,

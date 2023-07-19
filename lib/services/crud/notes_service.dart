@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' show join;
@@ -11,13 +12,20 @@ import 'crud_exceptions.dart';
 class NotesService {
   Database? _db;
   List<DataBaseNote> _notes = [];
-  final _notesStreamController =
-      StreamController<List<DataBaseNote>>.broadcast();
+  static final NotesService _shared = NotesService._sharedInstace();
+
+  NotesService._sharedInstace() {
+    _notesStreamController = StreamController<List<DataBaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
+
+  late final StreamController<List<DataBaseNote>> _notesStreamController;
 
   Stream<List<DataBaseNote>> get allNotes => _notesStreamController.stream;
 
-  static final NotesService _shared = NotesService._sharedInstace();
-  NotesService._sharedInstace();
   factory NotesService() => _shared;
 
   Future<DataBaseUser> getOrCreateUser({required String email}) async {
@@ -45,11 +53,9 @@ class NotesService {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
-    await getNote(id: note.id);
-
     final updateCount = await db.update(noteTable, {
       textColumn: text,
-      isSyncedWithCloudColumn: 0,
+      isSyncedWithCloudColumn: 1,
     });
 
     if (updateCount == 0) {
@@ -64,7 +70,6 @@ class NotesService {
   }
 
   Future<Iterable<DataBaseNote>> getAllNotes() async {
-    await _ensureDbIsOpen();
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final notes = await db.query(noteTable);
@@ -118,6 +123,19 @@ class NotesService {
     }
   }
 
+  void clearTable(String tableName) async {
+    // Get a reference to the database
+    Database database = await openDatabase(
+      join(await getDatabasesPath(), dbName),
+    );
+
+    // Delete all rows from the specified table
+    await database.delete(tableName);
+
+    // Close the database
+    await database.close();
+  }
+
   Future<DataBaseNote> createNote({required DataBaseUser owner}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
@@ -125,34 +143,34 @@ class NotesService {
     final dbUser = await getUser(
       email: owner.email,
     );
+
     if (dbUser != owner) {
       throw CouldNotFoundUser();
-    } else {
-      const text = '';
-      final noteId = await db.insert(
-        noteTable,
-        {
-          idColumn: owner.id,
-          textColumn: text,
-          isSyncedWithCloudColumn: 1,
-        },
-      );
-      final note = DataBaseNote(
-        id: noteId,
-        userId: owner.id,
-        text: text,
-        isSyncedWithCloud: true,
-      );
-      _notes.add(note);
-      _notesStreamController.add(_notes);
-      return note;
     }
+    const text = '';
+
+    final userId = await db.insert(noteTable, {
+      textColumn: text,
+      isSyncedWithCloudColumn: 1,
+    });
+    final note = DataBaseNote(
+      id: userId,
+      userId: owner.id,
+      text: '',
+      isSyncedWithCloud: true,
+    );
+    note;
+    _notes.add(note);
+    _notesStreamController.add(_notes);
+    return note;
   }
 
   Future<DataBaseUser> getUser({required String email}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-
+    try {} on DataBaseIsNotOpen {
+      await _ensureDbIsOpen();
+    }
     final results = await db.query(
       userTable,
       limit: 1,
@@ -202,13 +220,18 @@ class NotesService {
     }
   }
 
+  void opening() async {
+    try {} on DataBaseIsNotOpen {
+      await _ensureDbIsOpen();
+    }
+  }
+
   Database _getDatabaseOrThrow() {
     final db = _db;
     if (db == null) {
       throw DataBaseIsNotOpen();
-    } else {
-      return db;
     }
+    return db;
   }
 
   Future<void> open() async {
@@ -219,8 +242,8 @@ class NotesService {
         final docsPath = await getApplicationDocumentsDirectory();
         final dbPath = join(docsPath.path, dbName);
         final db = await openDatabase(dbPath);
-        _db = db;
 
+        _db = db;
         //created a constant user table with the constants down below
         await db.execute(creatUserTable);
 
@@ -276,7 +299,7 @@ class DataBaseUser {
 
 class DataBaseNote {
   final int id;
-  final int userId;
+  final int? userId;
   final String text;
   final bool isSyncedWithCloud;
 
@@ -286,9 +309,10 @@ class DataBaseNote {
     required this.text,
     required this.isSyncedWithCloud,
   });
+
   DataBaseNote.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
-        userId = map[userIdColumn] as int,
+        userId = map[userIdColumn] as int?,
         text = map[textColumn] as String,
         isSyncedWithCloud =
             (map[isSyncedWithCloudColumn] as int) == 1 ? true : false;
@@ -314,8 +338,8 @@ const textColumn = 'text';
 const isSyncedWithCloudColumn = 'is_synced_with_cloud';
 
 const creatNoteTable = '''CREATE TABLE IF NOT EXISTS "Note" (
-                  "id"	INTEGER NOT NULL,
-                  "User_id"	INTEGER NOT NULL,
+                  "id"	INTEGER ,
+                  "User_id"	INTEGER,
                   "text"	TEXT,
                   "is_synced_with_cloud"	INTEGER DEFAULT 0,
                   PRIMARY KEY("id" AUTOINCREMENT),

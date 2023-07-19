@@ -1,6 +1,5 @@
 import 'package:flutterapp/services/auth/auth_provider.dart';
 import 'package:flutterapp/services/auth/auth_user.dart';
-import 'package:test/test.dart';
 
 void main() {}
 

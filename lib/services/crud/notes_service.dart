@@ -123,19 +123,6 @@ class NotesService {
     }
   }
 
-  void clearTable(String tableName) async {
-    // Get a reference to the database
-    Database database = await openDatabase(
-      join(await getDatabasesPath(), dbName),
-    );
-
-    // Delete all rows from the specified table
-    await database.delete(tableName);
-
-    // Close the database
-    await database.close();
-  }
-
   Future<DataBaseNote> createNote({required DataBaseUser owner}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/Views/notes/notes_list_view.dart';
 import 'package:flutterapp/services/auth/auth_services.dart';
 import 'package:flutterapp/services/crud/notes_service.dart';
 import '../../constanst/routes.dart';
 import '../../enums/menu_action.dart';
-import '../../utilities/show_error_dialog.dart';
+import '../../utilities/dialog/error_dialog.dart';
+import '../../utilities/dialog/logout_dialog.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -22,12 +24,6 @@ class _NotesViewState extends State<NotesView> {
     super.initState();
   }
 
-  void deltedatabase() {
-    _notesService.deleteAllNotes();
-    _notesService.clearTable('note');
-    _notesService.clearTable('user');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,10 +31,6 @@ class _NotesViewState extends State<NotesView> {
         title: const Text('Your notes'),
         backgroundColor: Colors.amber,
         actions: [
-          IconButton(
-            onPressed: () => deltedatabase(),
-            icon: const Icon(Icons.remove),
-          ),
           IconButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(newNewRout);
@@ -86,22 +78,14 @@ class _NotesViewState extends State<NotesView> {
                 stream: _notesService.allNotes,
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
                     case ConnectionState.active:
                       if (snapshot.hasData) {
                         final allNotes = snapshot.data as List<DataBaseNote>;
-                        return ListView.builder(
-                          itemCount: allNotes.length,
-                          itemBuilder: (context, index) {
-                            final notess = allNotes[index];
-                            return ListTile(
-                              title: Text(
-                                notess.text,
-                                maxLines: 1,
-                                softWrap: true,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              hoverColor: Colors.amber,
-                            );
+                        return NotesListView(
+                          notes: allNotes,
+                          onDeleteNote: (note) async {
+                            await _notesService.deleteNote(id: note.id);
                           },
                         );
                       } else {
@@ -120,30 +104,4 @@ class _NotesViewState extends State<NotesView> {
       ),
     );
   }
-}
-
-Future<bool> showLogOutDialog(BuildContext context) {
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text('sign out'),
-        content: const Text('Are you sure you want to signout?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-            child: const Text('Canel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('confirm'),
-          )
-        ],
-      );
-    },
-  ).then((value) => value ?? false);
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp/Views/email_verification_view.dart';
 import 'package:flutterapp/Views/login_view.dart';
-import 'package:flutterapp/Views/notes/new_note_view.dart';
+import 'package:flutterapp/Views/notes/create_update_note_view.dart';
 import 'package:flutterapp/Views/register_view.dart';
 import 'package:flutterapp/constanst/routes.dart';
 import 'package:flutterapp/services/auth/auth_services.dart';
@@ -21,7 +21,7 @@ void main() {
       rigesterRoute: (context) => const RegisterView(),
       notesRoute: (context) => const NotesView(),
       verifyRoute: (context) => const VerifyEmailView(),
-      newNewRout: (context) => const NewNoteView(),
+      createUpdateNoteRout: (context) => const CreateUpdateNoteView(),
     }, //passing the viewed page
   ));
 }

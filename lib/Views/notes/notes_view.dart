@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutterapp/Views/notes/notes_list_view.dart';
 import 'package:flutterapp/services/auth/auth_services.dart';
@@ -31,6 +33,14 @@ class _NotesViewState extends State<NotesView> {
         title: const Text('Your notes'),
         backgroundColor: Colors.amber,
         actions: [
+          IconButton(
+              onPressed: () async {
+                _notesService.s();
+                AuthServices.firebase().logOut();
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+              },
+              icon: const Icon(Icons.remove)),
           IconButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(createUpdateNoteRout);

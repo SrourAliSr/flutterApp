@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp/Views/notes/notes_list_view.dart';
 import 'package:flutterapp/services/auth/auth_services.dart';
-import 'package:flutterapp/services/crud/notes_service.dart';
+import 'package:flutterapp/services/cloud/cloud_note.dart';
+import 'package:flutterapp/services/cloud/firebase_cloud_storage.dart';
 import '../../constanst/routes.dart';
 import '../../enums/menu_action.dart';
 import '../../utilities/dialog/error_dialog.dart';
@@ -15,12 +16,12 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
-  late final NotesService _notesService;
-  String get userEmail => AuthServices.firebase().currentUser!.email;
+  late final FirebaseCloudStorage _notesService;
+  String get userId => AuthServices.firebase().currentUser!.id;
 
   @override
   void initState() {
-    _notesService = NotesService();
+    _notesService = FirebaseCloudStorage();
     super.initState();
   }
 
@@ -31,14 +32,6 @@ class _NotesViewState extends State<NotesView> {
         title: const Text('Your notes'),
         backgroundColor: Colors.amber,
         actions: [
-          IconButton(
-              onPressed: () async {
-                _notesService.s();
-                AuthServices.firebase().logOut();
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(loginRoute, (route) => false);
-              },
-              icon: const Icon(Icons.remove)),
           IconButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(createUpdateNoteRout);
@@ -77,40 +70,30 @@ class _NotesViewState extends State<NotesView> {
           )
         ],
       ),
-      body: FutureBuilder(
-        future: _notesService.getOrCreateUser(email: userEmail),
+      body: StreamBuilder(
+        stream: _notesService.getAllNotes(ownerUsereId: userId),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return StreamBuilder(
-                stream: _notesService.allNotes,
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.active:
-                      if (snapshot.hasData) {
-                        final allNotes = snapshot.data as List<DataBaseNote>;
-                        return NotesListView(
-                          notes: allNotes,
-                          onDeleteNote: (note) async {
-                            await _notesService.deleteNote(id: note.id);
-                          },
-                          onTap: (note) {
-                            Navigator.of(context).pushNamed(
-                              createUpdateNoteRout,
-                              arguments: note,
-                            );
-                          },
-                        );
-                      } else {
-                        return const CircularProgressIndicator();
-                      }
+            case ConnectionState.waiting:
+            case ConnectionState.active:
+              if (snapshot.hasData) {
+                final allNotes = snapshot.data as Iterable<CloudNote>;
+                return NotesListView(
+                  notes: allNotes,
+                  onDeleteNote: (note) async {
+                    await _notesService.deleteNote(documentId: note.documentId);
+                  },
+                  onTap: (note) {
+                    Navigator.of(context).pushNamed(
+                      createUpdateNoteRout,
+                      arguments: note,
+                    );
+                  },
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
 
-                    default:
-                      return const CircularProgressIndicator();
-                  }
-                },
-              );
             default:
               return const CircularProgressIndicator();
           }

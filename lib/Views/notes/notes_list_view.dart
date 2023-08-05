@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp/services/cloud/cloud_note.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../utilities/dialog/delete_dialog.dart';
 
 typedef NoteCallBack = void Function(CloudNote note);
@@ -26,6 +27,13 @@ class NotesListView extends StatelessWidget {
           onTap: () {
             onTap(note);
           },
+          leading: IconButton(
+            onPressed: () async {
+              final text = note.text;
+              Share.share(text);
+            },
+            icon: const Icon(Icons.share),
+          ),
           title: Text(
             note.text,
             maxLines: 1,

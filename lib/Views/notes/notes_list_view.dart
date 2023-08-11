@@ -5,7 +5,7 @@ import '../../utilities/dialog/delete_dialog.dart';
 
 typedef NoteCallBack = void Function(CloudNote note);
 
-class NotesListView extends StatelessWidget {
+class NotesListView extends StatefulWidget {
   final Iterable<CloudNote> notes;
   final NoteCallBack onDeleteNote;
   final NoteCallBack onTap;
@@ -18,36 +18,75 @@ class NotesListView extends StatelessWidget {
   });
 
   @override
+  State<NotesListView> createState() => _NotesListViewState();
+}
+
+class _NotesListViewState extends State<NotesListView> {
+  @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: notes.length,
+      itemCount: widget.notes.length,
+      padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
       itemBuilder: (context, index) {
-        final note = notes.elementAt(index);
-        return ListTile(
-          onTap: () {
-            onTap(note);
-          },
-          leading: IconButton(
-            onPressed: () async {
-              final text = note.text;
-              Share.share(text);
-            },
-            icon: const Icon(Icons.share),
-          ),
-          title: Text(
-            note.text,
-            maxLines: 1,
-            softWrap: true,
-            overflow: TextOverflow.ellipsis,
-          ),
-          trailing: IconButton(
-              onPressed: () async {
-                final shouldDelete = await showDeleteDialog(context);
-                if (shouldDelete) {
-                  onDeleteNote(note);
+        final note = widget.notes.elementAt(index);
+        return Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Dismissible(
+              background: Container(
+                color: Colors.green,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                alignment: Alignment.centerLeft,
+                child: const Icon(
+                  Icons.share,
+                ),
+              ),
+              secondaryBackground: Container(
+                color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: const Icon(Icons.delete),
+              ),
+              key: ValueKey<CloudNote>(widget.notes.elementAt(index)),
+              onDismissed: (DismissDirection direction) async {
+                setState(() {});
+
+                switch (direction) {
+                  case DismissDirection.startToEnd:
+                    Share.share(widget.notes.elementAt(index).toString());
+                    break;
+                  case DismissDirection.endToStart:
+                    bool check = await showDeleteDialog(context);
+                    if (check == true) {
+                      widget.onDeleteNote(note);
+                    }
+                    break;
+                  default:
                 }
               },
-              icon: const Icon(Icons.delete)),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                onTap: () {
+                  widget.onTap(note);
+                },
+                shape: RoundedRectangleBorder(
+                  side: const BorderSide(
+                      width: 3, color: Color.fromARGB(255, 233, 189, 56)),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                title: Text(
+                  note.text,
+                  maxLines: 1,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          ),
         );
       },
     );

@@ -114,6 +114,7 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
                 _setupTextControllerListener();
                 return TextField(
                   controller: _textController,
+                  autofocus: true,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
                   decoration:

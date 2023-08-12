@@ -49,20 +49,36 @@ class _NotesListViewState extends State<NotesListView> {
                 child: const Icon(Icons.delete),
               ),
               key: ValueKey<CloudNote>(widget.notes.elementAt(index)),
-              onDismissed: (DismissDirection direction) async {
-                setState(() {});
-
+              // onDismissed: (DismissDirection direction) async {
+              //   setState(() {});
+              //   switch (direction) {
+              //     case DismissDirection.startToEnd:
+              //       Share.share(widget.notes.elementAt(index).toString());
+              //       break;
+              //     case DismissDirection.endToStart:
+              //       bool check = await showDeleteDialog(context);
+              //       if (check == true) {
+              //         widget.onDeleteNote(note);
+              //       }
+              //       break;
+              //     default:
+              //   }
+              // },
+              confirmDismiss: (direction) async {
                 switch (direction) {
                   case DismissDirection.startToEnd:
                     Share.share(widget.notes.elementAt(index).toString());
-                    break;
+                    return false;
                   case DismissDirection.endToStart:
                     bool check = await showDeleteDialog(context);
                     if (check == true) {
                       widget.onDeleteNote(note);
+                      return true;
+                    } else {
+                      return false;
                     }
-                    break;
                   default:
+                    return false;
                 }
               },
               child: ListTile(

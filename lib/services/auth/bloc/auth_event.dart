@@ -20,7 +20,8 @@ class AuthEventLogOut extends AuthEvent {
 }
 
 class AuthEventSendEmailVerification extends AuthEvent {
-  const AuthEventSendEmailVerification();
+  final bool isVerified;
+  const AuthEventSendEmailVerification(this.isVerified);
 }
 
 class AuthEventRegister extends AuthEvent {
@@ -38,4 +39,10 @@ class AuthEventForgotPassword extends AuthEvent {
   final String? email;
 
   const AuthEventForgotPassword({this.email});
+}
+
+class AuthEventNoteHold extends AuthEvent {
+  final String note;
+
+  const AuthEventNoteHold({required this.note});
 }

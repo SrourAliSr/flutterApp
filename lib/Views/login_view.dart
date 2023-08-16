@@ -56,63 +56,102 @@ class _LoginViewState extends State<LoginView> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Log in'),
-          backgroundColor: Colors.amber,
+          backgroundColor: const Color.fromRGBO(187, 134, 252, 20),
+          toolbarHeight: 65,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _email,
-                keyboardType: TextInputType.emailAddress,
-                autocorrect: false,
-                autofocus: true,
-                decoration: const InputDecoration(hintText: 'Email'),
-              ),
-              TextField(
-                controller: _password,
-                obscureText: true,
-                autocorrect: false,
-                enableSuggestions: false,
-                decoration: const InputDecoration(hintText: 'Password'),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextButton(
-                    onPressed: () async {
-                      final email = _email.text;
-                      final password = _password.text;
+        body: Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              alignment: Alignment.center,
+              height: 340,
+              width: 300,
+              color: const Color.fromARGB(255, 111, 111, 111),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextField(
+                      controller: _email,
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                          hintText: 'Email',
+                          hintStyle: TextStyle(
+                              color: Color.fromARGB(255, 184, 184, 184))),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255)),
+                    ),
+                    TextField(
+                      controller: _password,
+                      obscureText: true,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      decoration: const InputDecoration(
+                        hintText: 'Password',
+                        hintStyle: TextStyle(
+                            color: Color.fromARGB(255, 184, 184, 184)),
+                      ),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255)),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        TextButton(
+                          onPressed: () async {
+                            final email = _email.text;
+                            final password = _password.text;
 
-                      context.read<AuthBloc>().add(
-                            AuthEventLogIn(
-                              email,
-                              password,
-                            ),
-                          );
-                    },
-                    child: const Text('Login'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      context
-                          .read<AuthBloc>()
-                          .add(const AuthEventForgotPassword());
-                    },
-                    child: const Text('Reset password'),
-                  ),
-                ],
+                            context.read<AuthBloc>().add(
+                                  AuthEventLogIn(
+                                    email,
+                                    password,
+                                  ),
+                                );
+                          },
+                          child: const Text(
+                            'Login',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 213, 213, 213)),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            context
+                                .read<AuthBloc>()
+                                .add(const AuthEventForgotPassword());
+                          },
+                          child: const Text(
+                            'Reset password',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 213, 213, 213)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context
+                            .read<AuthBloc>()
+                            .add(const AuthEventShouldRegister());
+                      },
+                      child: const Text(
+                        'Not registerd yet? register here!',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 213, 213, 213)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              TextButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(const AuthEventShouldRegister());
-                },
-                child: const Text('Not registerd yet? register here!'),
-              ),
-            ],
+            ),
           ),
         ),
+        backgroundColor: Colors.black,
       ),
     );
   }

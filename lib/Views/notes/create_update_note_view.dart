@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp/services/auth/auth_services.dart';
-import 'package:flutterapp/utilities/dialog/cannot_share_empty_note_dialog.dart';
 import 'package:flutterapp/utilities/generics/get_arguments.dart';
 import 'package:flutterapp/services/cloud/cloud_note.dart';
 import 'package:flutterapp/services/cloud/firebase_cloud_storage.dart';
-import 'package:share_plus/share_plus.dart';
 
 class CreateUpdateNoteView extends StatefulWidget {
   const CreateUpdateNoteView({super.key});
@@ -88,42 +86,48 @@ class _CreateUpdateNoteViewState extends State<CreateUpdateNoteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('New Note'),
-          backgroundColor: Colors.amber,
-          actions: [
-            IconButton(
-              onPressed: () async {
-                final text = _textController.text;
-                if (_note == null && text.isEmpty) {
-                  await cannotShareEmptyNoteDialog(context);
-                } else {
-                  Share.share(text);
-                }
-              },
-              icon: const Icon(Icons.share),
-            ),
-          ],
-        ),
-        body: FutureBuilder(
-          future: getOrCreateExistingNote(context),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-              case ConnectionState.done:
-                _setupTextControllerListener();
-                return TextField(
-                  controller: _textController,
-                  autofocus: true,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration:
-                      const InputDecoration(hintText: 'enter the note!'),
-                );
-              default:
-                return const CircularProgressIndicator();
-            }
-          },
-        ));
+      appBar: AppBar(
+        title: const Text('New Note'),
+        backgroundColor: const Color.fromRGBO(187, 134, 252, 20),
+        toolbarHeight: 65,
+      ),
+      body: FutureBuilder(
+        future: getOrCreateExistingNote(context),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+            case ConnectionState.done:
+              _setupTextControllerListener();
+              return Container(
+                margin: const EdgeInsets.fromLTRB(20, 50, 20, 0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    width: 500,
+                    height: 600,
+                    color: const Color.fromARGB(255, 99, 99, 99),
+                    child: TextField(
+                      controller: _textController,
+                      autofocus: true,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      decoration: const InputDecoration(
+                          hintText: 'enter the note!',
+                          filled: true,
+                          border: InputBorder.none,
+                          fillColor: Color.fromARGB(255, 99, 99, 99)),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              );
+            default:
+              return const CircularProgressIndicator();
+          }
+        },
+      ),
+      backgroundColor: Colors.black,
+    );
   }
 }

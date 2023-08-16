@@ -29,6 +29,7 @@ class _NotesListViewState extends State<NotesListView> {
       padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
       itemBuilder: (context, index) {
         final note = widget.notes.elementAt(index);
+
         return Padding(
           padding: const EdgeInsets.all(4.0),
           child: ClipRRect(
@@ -64,10 +65,11 @@ class _NotesListViewState extends State<NotesListView> {
               //     default:
               //   }
               // },
+
               confirmDismiss: (direction) async {
                 switch (direction) {
                   case DismissDirection.startToEnd:
-                    Share.share(widget.notes.elementAt(index).toString());
+                    await Share.share(widget.notes.elementAt(index).text);
                     return false;
                   case DismissDirection.endToStart:
                     bool check = await showDeleteDialog(context);
@@ -82,20 +84,23 @@ class _NotesListViewState extends State<NotesListView> {
                 }
               },
               child: ListTile(
+                tileColor: const Color.fromARGB(255, 89, 89, 89),
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 10,
+                  vertical: 15,
                 ),
                 onTap: () {
                   widget.onTap(note);
                 },
                 shape: RoundedRectangleBorder(
                   side: const BorderSide(
-                      width: 3, color: Color.fromARGB(255, 233, 189, 56)),
+                    width: 3,
+                  ),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 title: Text(
                   note.text,
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
                   maxLines: 1,
                   softWrap: true,
                   overflow: TextOverflow.ellipsis,
@@ -105,6 +110,24 @@ class _NotesListViewState extends State<NotesListView> {
           ),
         );
       },
+    );
+  }
+}
+
+class PopUp extends StatelessWidget {
+  final String note;
+  const PopUp({required this.note, super.key});
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 20,
+      height: 20,
+      child: Container(
+        color: Colors.grey,
+        child: Column(children: [
+          Text(note),
+        ]),
+      ),
     );
   }
 }

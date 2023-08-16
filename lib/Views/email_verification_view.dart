@@ -29,7 +29,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   onPressed: () {
                     context
                         .read<AuthBloc>()
-                        .add(const AuthEventSendEmailVerification());
+                        .add(const AuthEventSendEmailVerification(false));
                   },
                   child: const Text('Haven\'t recived the email? click here!')),
               TextButton(

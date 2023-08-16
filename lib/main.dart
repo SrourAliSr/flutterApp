@@ -18,7 +18,16 @@ void main() {
 
   runApp(MaterialApp(
     theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color.fromRGBO(255, 255, 255, 52),
+      ),
+      textButtonTheme: const TextButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor:
+              MaterialStatePropertyAll(Color.fromRGBO(152, 97, 220, 0.925)),
+        ),
+      ),
+      primaryTextTheme: Typography.whiteCupertino,
       useMaterial3: true,
     ),
     home: BlocProvider<AuthBloc>(
@@ -27,6 +36,7 @@ void main() {
     ),
     routes: {
       createUpdateNoteRout: (context) => const CreateUpdateNoteView(),
+      '/login/': (context) => const LoginView(),
     }, //passing the viewed page
   ));
 }
@@ -62,6 +72,7 @@ class HomePage extends StatelessWidget {
           body: Container(
               padding: const EdgeInsets.fromLTRB(250, 500, 0, 0),
               child: const CircularProgressIndicator()),
+          backgroundColor: Colors.black,
         );
       }
     });

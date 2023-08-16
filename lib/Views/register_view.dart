@@ -63,48 +63,77 @@ class _RegisterViewState extends State<RegisterView> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Register'),
-          backgroundColor: Colors.amber,
+          backgroundColor: const Color.fromRGBO(187, 134, 252, 20),
+          toolbarHeight: 65,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _email,
-                autofocus: true,
-                autocorrect: false,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(hintText: 'email'),
-              ),
-              TextField(
-                controller: _password,
-                obscureText: true,
-                enableSuggestions: false,
-                autocorrect: false,
-                decoration: const InputDecoration(hintText: 'password'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final email = _email.text;
-                  final password = _password.text;
+        body: Container(
+          alignment: Alignment.center,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              alignment: Alignment.center,
+              height: 340,
+              width: 300,
+              color: const Color.fromARGB(255, 111, 111, 111),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextField(
+                      controller: _email,
+                      autofocus: true,
+                      autocorrect: false,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                          hintText: 'email',
+                          hintStyle: TextStyle(
+                              color: Color.fromARGB(255, 184, 184, 184))),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255)),
+                    ),
+                    TextField(
+                      controller: _password,
+                      obscureText: true,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                          hintText: 'password',
+                          hintStyle: TextStyle(
+                              color: Color.fromARGB(255, 184, 184, 184))),
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255)),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        final email = _email.text;
+                        final password = _password.text;
 
-                  context.read<AuthBloc>().add(
-                        AuthEventRegister(
-                          email,
-                          password,
-                        ),
-                      );
-                },
-                child: const Text('Register'),
+                        context.read<AuthBloc>().add(
+                              AuthEventRegister(
+                                email,
+                                password,
+                              ),
+                            );
+                      },
+                      child: const Text('Register',
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 213, 213, 213))),
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          context.read<AuthBloc>().add(const AuthEventLogOut());
+                        },
+                        child: const Text('go back to Login',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 213, 213, 213))))
+                  ],
+                ),
               ),
-              TextButton(
-                  onPressed: () {
-                    context.read<AuthBloc>().add(const AuthEventLogOut());
-                  },
-                  child: const Text('go back to Login'))
-            ],
+            ),
           ),
         ),
+        backgroundColor: Colors.black,
       ),
     );
   }

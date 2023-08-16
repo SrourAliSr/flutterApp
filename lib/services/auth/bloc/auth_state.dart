@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 abstract class AuthState {
   final bool isLoading;
   final String? loadingText;
-
   const AuthState({
     required this.isLoading,
     this.loadingText = "please wait a moment",

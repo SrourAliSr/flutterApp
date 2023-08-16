@@ -33,13 +33,9 @@ class _NotesViewState extends State<NotesView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your notes'),
-        backgroundColor: Colors.amber,
+        backgroundColor: const Color.fromRGBO(187, 134, 252, 20),
+        toolbarHeight: 65,
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(createUpdateNoteRout);
-              },
-              icon: const Icon(Icons.add)),
           PopupMenuButton<MenuAction>(
             onSelected: (value) async {
               switch (value) {
@@ -92,20 +88,36 @@ class _NotesViewState extends State<NotesView> {
                   },
                 );
               } else {
-                return Container(
-                  alignment: Alignment.center,
-                  child: const CircularProgressIndicator(),
+                return Scaffold(
+                  backgroundColor: Colors.black,
+                  body: Container(
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator(),
+                  ),
                 );
               }
 
             default:
-              return Container(
-                alignment: Alignment.center,
-                child: const CircularProgressIndicator(),
+              return Scaffold(
+                backgroundColor: Colors.black,
+                body: Container(
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(),
+                ),
               );
           }
         },
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed(createUpdateNoteRout);
+        },
+        backgroundColor: const Color.fromRGBO(187, 134, 252, 20),
+        shape: const CircleBorder(side: BorderSide.none),
+        child: const Icon(Icons.add),
+      ),
+      backgroundColor: Colors.black,
     );
   }
 }

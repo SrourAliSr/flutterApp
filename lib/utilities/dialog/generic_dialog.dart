@@ -26,7 +26,12 @@ Future<T?> showGenericDialog<T>({
                   Navigator.of(context).pop();
                 }
               },
-              child: Text(optionTitle),
+              style: const ButtonStyle(
+                  backgroundColor:
+                      MaterialStatePropertyAll(Color.fromRGBO(0, 0, 0, 0))),
+              child: Text(
+                optionTitle,
+              ),
             );
           },
         ).toList(),

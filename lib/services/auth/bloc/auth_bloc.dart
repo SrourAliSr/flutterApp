@@ -90,6 +90,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       },
     );
+
     //send email verification
     on<AuthEventSendEmailVerification>(
       (event, emit) async {
@@ -108,6 +109,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: password,
           );
           await provider.sendEmailVerification();
+
           emit(const AuthStateNeedsVerification(isLoading: false));
         } on Exception catch (e) {
           emit(AuthStateRegistering(exception: e, isLoading: false));
